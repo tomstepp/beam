@@ -59,6 +59,10 @@ public class PubSubPayloadTranslation {
     @Override
     public RunnerApi.FunctionSpec translate(
         AppliedPTransform<?, ?, Unbounded<?>> transform, SdkComponents components) {
+      if (ExperimentalOptions.hasExperiment(
+          transform.getPipeline().getOptions(), "enable_custom_pubsub_source")) {
+        return null;
+      }
       if (!(transform.getTransform().getSource() instanceof PubsubUnboundedSource.PubsubSource)) {
         return null;
       }
@@ -111,6 +115,10 @@ public class PubSubPayloadTranslation {
     public RunnerApi.FunctionSpec translate(
         AppliedPTransform<?, ?, PubsubUnboundedSink.PubsubSink> transform,
         SdkComponents components) {
+      if (ExperimentalOptions.hasExperiment(
+          transform.getPipeline().getOptions(), "enable_custom_pubsub_sink")) {
+        return null;
+      }
       PubSubWritePayload.Builder payloadBuilder = PubSubWritePayload.newBuilder();
       ValueProvider<TopicPath> topicProvider =
           Preconditions.checkStateNotNull(transform.getTransform().outer.getTopicProvider());
@@ -145,6 +153,10 @@ public class PubSubPayloadTranslation {
     public RunnerApi.FunctionSpec translate(
         AppliedPTransform<?, ?, PubsubUnboundedSink.PubsubDynamicSink> transform,
         SdkComponents components) {
+      if (ExperimentalOptions.hasExperiment(
+          transform.getPipeline().getOptions(), "enable_custom_pubsub_sink")) {
+        return null;
+      }
       PubSubWritePayload.Builder payloadBuilder = PubSubWritePayload.newBuilder();
       if (transform.getTransform().outer.getTimestampAttribute() != null) {
         payloadBuilder.setTimestampAttribute(
